@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropbox MCP Hybrid Assistant</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Hybrid Dropbox MCP Scaffold</p>
+          <h1>Browse with MCP. Upload with direct Dropbox API.</h1>
+        </div>
+        <div class="topbar-actions">
+          <div id="status-pill" class="status-pill disconnected">Dropbox disconnected</div>
+          <button id="connect-button" class="button button-primary" type="button">
+            Connect Dropbox
+          </button>
+          <button id="disconnect-button" class="button button-secondary hidden" type="button">
+            Disconnect
+          </button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar card">
+          <section>
+            <p class="section-label">Workspace</p>
+            <h2>Session Control</h2>
+            <p id="account-summary" class="muted">
+              Connect your Dropbox account to unlock remote MCP browsing and uploads.
+            </p>
+            <div id="scope-summary" class="diagnostic-panel hidden"></div>
+          </section>
+
+          <section class="divider-top">
+            <p class="section-label">File Staging</p>
+            <form id="staging-form" class="stack">
+              <label class="file-picker">
+                <span>Select a local file</span>
+                <input id="file-input" name="file" type="file" />
+              </label>
+              <button class="button button-primary" type="submit">Stage File</button>
+            </form>
+            <div id="staged-file-card" class="staged-card hidden"></div>
+            <label class="stack">
+              <span class="field-label">Dropbox path hint</span>
+              <input
+                id="path-hint-input"
+                class="text-input"
+                type="text"
+                placeholder="/contracts/ or /contracts/proposal.pdf"
+              />
+            </label>
+            <p class="muted small">
+              The model sees this as a hint. Folder paths should end with <code>/</code>.
+            </p>
+          </section>
+
+          <section class="divider-top">
+            <p class="section-label">Diagnostics</p>
+            <div class="stack">
+              <button id="diagnostics-button" class="button button-secondary" type="button">
+                Run Connection Diagnostics
+              </button>
+              <div id="diagnostics-summary" class="diagnostic-panel hidden"></div>
+            </div>
+          </section>
+
+          <section class="divider-top">
+            <p class="section-label">Prompt Ideas</p>
+            <ul class="prompt-list">
+              <li>List the files in my Dropbox root folder.</li>
+              <li>Search Dropbox for invoices from February.</li>
+              <li>Upload my staged file into <code>/incoming/</code>.</li>
+              <li>Read the file contents of the proposal I just found.</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="chat-panel card">
+          <div id="banner" class="banner hidden"></div>
+
+          <div id="messages" class="messages"></div>
+
+          <form id="chat-form" class="composer">
+            <label class="composer-label" for="message-input">Ask the assistant</label>
+            <textarea
+              id="message-input"
+              class="message-input"
+              rows="4"
+              placeholder="Example: Upload the staged file into /incoming/ and tell me where it landed."
+            ></textarea>
+            <div class="composer-actions">
+              <p class="muted small">
+                The assistant uses Dropbox MCP for read actions and a custom tool for writes.
+              </p>
+              <button id="send-button" class="button button-primary" type="submit">Send</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
