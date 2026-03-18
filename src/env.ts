@@ -41,11 +41,11 @@ export const dropboxScopes = [
 ];
 
 export const dropboxMcpAllowedTools = [
-  "ListFolder",
-  "GetFileMetadata",
-  "GetFileContent",
-  "GetUsageAndQuota",
-  "Search"
+  "list_folder",
+  "get_file_metadata",
+  "get_file_content",
+  "get_usage_and_quota",
+  "search"
 ];
 
 export const dropboxMcpRequiredScopes = [

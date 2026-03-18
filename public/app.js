@@ -213,7 +213,7 @@ async function sendMessage(event) {
       },
       body: JSON.stringify({
         message,
-        previousResponseId: state.previousResponseId,
+        previousResponseId: state.previousResponseId || undefined,
         stagedUploadId: state.stagedUpload?.id || undefined
       })
     });
@@ -298,6 +298,10 @@ async function runDiagnostics() {
 
         if (Array.isArray(mcp.outputTypes) && mcp.outputTypes.length > 0) {
           lines.push(`<p>Output types: ${mcp.outputTypes.join(", ")}</p>`);
+        }
+
+        if (Array.isArray(mcp.toolNames) && mcp.toolNames.length > 0) {
+          lines.push(`<p>Tools: ${mcp.toolNames.join(", ")}</p>`);
         }
 
         if (mcp.error) {

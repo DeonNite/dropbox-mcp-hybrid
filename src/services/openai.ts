@@ -67,6 +67,7 @@ export interface OpenAIDiagnostics {
     ok: boolean;
     error?: string;
     outputTypes?: string[];
+    toolNames?: string[];
   };
 }
 
@@ -179,7 +180,7 @@ export class OpenAIService {
           server_label: "dropbox",
           server_url: "https://mcp.dropbox.com/mcp",
           authorization: dropboxAccessToken,
-          allowed_tools: ["ListFolder"],
+          allowed_tools: ["list_folder"],
           require_approval: "never"
         }
       ],
@@ -190,14 +191,38 @@ export class OpenAIService {
     const mcpBody = mcpResponse.body && typeof mcpResponse.body === "object"
       ? (mcpResponse.body as Partial<OpenAIResponse>)
       : null;
+    const mcpOutput =
+      mcpBody?.output && Array.isArray(mcpBody.output)
+        ? (mcpBody.output as Array<Record<string, unknown>>)
+        : [];
+    const listToolsItem = mcpOutput.find(
+      (item) => item.type === "mcp_list_tools" && item.server_label === "dropbox"
+    );
+    const toolNames = Array.isArray(listToolsItem?.tools)
+      ? listToolsItem.tools
+          .map((tool) =>
+            tool && typeof tool === "object" && "name" in tool && typeof tool.name === "string"
+              ? tool.name
+              : null
+          )
+          .filter((name): name is string => Boolean(name))
+      : [];
+    const mcpReady = mcpResponse.ok && toolNames.length > 0;
 
     diagnostics.dropboxMcp = {
       attempted: true,
-      ok: mcpResponse.ok,
+      ok: mcpReady,
       ...(Array.isArray(mcpBody?.output)
         ? { outputTypes: mcpBody.output.map((item) => item.type) }
         : {}),
-      ...(!mcpResponse.ok ? { error: this.describeErrorPayload(mcpResponse.status, mcpResponse.body) } : {})
+      ...(toolNames.length > 0 ? { toolNames } : {}),
+      ...(!mcpReady
+        ? {
+            error: mcpResponse.ok
+              ? "Dropbox MCP connected but exposed zero usable tools to the model."
+              : this.describeErrorPayload(mcpResponse.status, mcpResponse.body)
+          }
+        : {})
     };
 
     return diagnostics;
@@ -361,6 +386,8 @@ export class OpenAIService {
     return [
       "You are a Dropbox assistant for a web app that combines Dropbox MCP with a direct Dropbox upload function.",
       "Use Dropbox MCP for read operations such as listing folders, searching, checking metadata, or reading file contents.",
+      "If Dropbox MCP list_folder returns an empty object or no entries, treat that as an empty folder unless the tool explicitly returns an error.",
+      "Do not claim the Dropbox connection is missing or unauthorized unless a tool call explicitly fails with an auth or access error.",
       "Do not invent Dropbox files, folder names, or upload identifiers.",
       ...uploadRules,
       "Keep responses concise and action-oriented."

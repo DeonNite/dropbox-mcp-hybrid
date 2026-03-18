@@ -242,7 +242,8 @@ export class DropboxService {
       `${DROPBOX_API_BASE}/users/get_current_account`,
       {
         method: "POST",
-        headers: this.jsonHeaders(accessToken)
+        headers: this.jsonHeaders(accessToken),
+        body: "null"
       },
       "Dropbox get_current_account"
     );

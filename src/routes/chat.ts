@@ -8,8 +8,8 @@ import type { DropboxService } from "../services/dropbox.js";
 
 const chatRequestSchema = z.object({
   message: z.string().min(1),
-  previousResponseId: z.string().min(1).optional(),
-  stagedUploadId: z.string().min(1).optional()
+  previousResponseId: z.string().min(1).nullish(),
+  stagedUploadId: z.string().min(1).nullish()
 });
 
 export function createChatRouter(
