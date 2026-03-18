@@ -46,6 +46,11 @@ Your current `.env` already has:
 - `DROPBOX_APP_KEY`
 - `DROPBOX_APP_SECRET`
 
+Note:
+```OAuth User limits
+The free tier only limits OAuth users to 500.
+```
+
 Add:
 
 ```env
